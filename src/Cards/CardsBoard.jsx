@@ -6,7 +6,7 @@ import('./cards-board.css');
 class CardsBoard extends React.Component {
   render() {
     return (
-      <div class="cards-board">
+      <div className="cards-board">
         <Card name="pacorl" />
         <Card name="pacorl" />
         <Card name="pacorl" />

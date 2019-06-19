@@ -5,7 +5,7 @@ import('./card.css');
 
 class Card extends React.PureComponent {
   render() {
-    return (<div class="card">
+    return (<div className="card">
       {this.props.name}
     </div>);
   }
