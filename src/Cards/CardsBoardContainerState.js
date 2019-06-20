@@ -1,7 +1,6 @@
 // initial state
 const initialState = {
-  initialDeck: null,
-  currentDeck: null,
+  currentDeck: false,
 }
 
 // reducer
@@ -11,11 +10,11 @@ export default function CardsBoardReducer(
 ) {
   switch (action.type) {
     case 'STORE_DEFAULT_DECK':
-      return { ...state, initialDeck: action.payload };
-    case 'UPDATE_CURRENT_DECK':
+      return { ...state, currentDeck: action.payload };
+    case 'REMOVE_CARD':
       return {
         ...state,
-        currentDeck: state.currentDeck.filter(item => item !== action.payload)
+        currentDeck: state.currentDeck.filter(item => item._id !== action.payload)
       };
     default:
       return state;
@@ -23,12 +22,15 @@ export default function CardsBoardReducer(
 }
 
 // actions
-export const storeDefaultDeck = (deck) => ({
-  type: 'TOGGLE_REMEMBER_CREDENTIALS',
+export const storeInitialDeck = (deck) => ({
+  type: 'STORE_DEFAULT_DECK',
   payload: deck
 });
 
-// selectors
-export const defaultDeckSelector = (state) => state.initialDeck;
+export const removeCard = (id) => ({
+  type: 'REMOVE_CARD',
+  payload: id
+});
 
-export const currentDeckSelector = (state) => state.currentDeck;
+// selectors
+export const currentDeckSelector = (state) => state.CardsBoardReducer.currentDeck;

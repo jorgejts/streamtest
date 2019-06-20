@@ -2,17 +2,15 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 import CardsBoard from './CardsBoard';
-import { defaultDeckSelector, currentDeckSelector, storeDefaultDeck } from './CardsBoardContainerState';
-
-
+import { currentDeckSelector, storeInitialDeck, removeCard } from './CardsBoardContainerState';
 
 const mapStateToProps = (state) => ({
-  defaultDeck: defaultDeckSelector(state),
   currentDeck: currentDeckSelector(state),
 });
 
 const mapDispatchToProps = {
-  storeDefaultDeck
+  storeInitialDeck,
+  removeCard
 };
 
 const CardsBoardContainer = (props) => <CardsBoard {...props} />;

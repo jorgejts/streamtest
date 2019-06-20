@@ -2,14 +2,14 @@ import React from 'react';
 import { Provider } from 'react-redux';
 
 import store from './store';
-import CardsBoard from './Cards/CardsBoard';
+import CardsBoardContainer from './Cards/CardsBoardContainer';
 
 
 
 function App() {
   return (
     <Provider store={store}>
-      <CardsBoard />
+      <CardsBoardContainer />
     </Provider>
   );
 }
