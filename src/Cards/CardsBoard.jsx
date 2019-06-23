@@ -1,69 +1,93 @@
-import React from 'react';
+import * as React from 'react';
 
 import Card from './Card';
 import initialDeckJson from '../resources/cards';
-import { filter } from 'rsvp';
 
 import('./cards-board.css');
 
-
 class CardsBoard extends React.Component {
+	constructor(props) {
+		super(props);
 
-  constructor(props) {
-    super(props);
-    this.state = { deck: [] };
+		this.getDefaultDeck = this.getDefaultDeck.bind(this);
+		this.filterCards = this.filterCards.bind(this);
+		this.goToEdit = this.goToEdit.bind(this);
+	}
 
-    this.getDefaultDeck = this.getDefaultDeck.bind(this);
-    this.filterCards = this.filterCards.bind(this);
-  }
+	getDefaultDeck(url) {
+		fetch(url)
+			.then(response => {
+				if (!response.ok) {
+					throw Error(response.statusText);
+				}
+				return initialDeckJson;
+			})
+			.then(cards => {
+				this.props.storeInitialDeck(cards);
+			})
+			.catch(error => {
+				console.error(error);
+			});
+	}
 
-  getDefaultDeck(url) {
+	filterCards(event) {
+		const value = (event && event.target.value).toLowerCase() || '';
+		if (value) {
+			this.props.setFilter(value);
+		} else {
+			this.props.setFilter('');
+		}
+	}
 
-    fetch(url)
-      .then((response) => {
-        if (!response.ok) {
-          throw Error(response.statusText);
-        }
-        return initialDeckJson;
-      })
-      .then((cards) => { this.props.storeInitialDeck(cards) })
-      .catch((error) => { console.error(error) });
+	goToEdit(cardInfo) {
+		this.props.storeCardToEdit(cardInfo);
+		this.props.history.push('/edit');
+	}
 
-  }
+	renderCard(cardInfo) {
+		const { removeCard } = this.props;
+		return (
+			<Card
+				cardInfo={cardInfo}
+				removeCard={() => removeCard(cardInfo._id)}
+				goToEdit={() => this.goToEdit(cardInfo)}
+				key={cardInfo._id}
+			/>
+		);
+	}
 
-  filterCards(event) {
-    const value = event && event.target.value || '';
-    console.log(value)
-    if (value.length >= 3) {
-      this.setState({ deck: this.props.currentDeck.find(card => card.name.includes(value)) });
-    } else {
-      this.setState({ deck: this.props.currentDeck });
-    }
-  }
+	componentDidMount() {
+		if (this.props.initialDeck.length === 0) {
+			this.getDefaultDeck('https://swapi.co/api/people/1/');
+		}
+	}
 
-  componentDidMount() {
-    if (!this.props.currentDeck) {
-      this.getDefaultDeck('https://swapi.co/api/people/1/');
-    }
-  }
+	render() {
+		const { currentDeck, initialDeck, storeCurrentDeck, filter } = this.props;
 
-  render() {
-    const { currentDeck, removeCard } = this.props;
-    let { deck } = this.state;
-    console.log(deck)
-    return (
-      <React.Fragment>
-        <input type="text" onChange={this.filterCards} />
-        <div className="cards-board">
-          {deck ? deck.map(
-            cardInfo => <Card name={cardInfo.name} removeCard={() => removeCard(cardInfo._id)} key={cardInfo._id} />
-          ) : currentDeck.map(
-            cardInfo => <Card name={cardInfo.name} removeCard={() => removeCard(cardInfo._id)} key={cardInfo._id} />
-          )}
-        </div>
-      </React.Fragment>
-    )
-  }
+		if (currentDeck.length === 0) {
+			storeCurrentDeck(initialDeck);
+		}
+		// if (cardToEdit) {
+		// 	this.props.history.push('/edit');
+		// }
+
+		return (
+			<React.Fragment>
+				<input type="text" onChange={this.filterCards} value={filter} />
+				<button onClick={() => storeCurrentDeck(initialDeck)}>Restore</button>
+				<div className="cards-board">
+					{!filter
+						? currentDeck &&
+						  currentDeck.map(cardInfo => this.renderCard(cardInfo))
+						: currentDeck &&
+						  currentDeck
+								.filter(card => card.name.toLowerCase().includes(filter))
+								.map(cardInfo => this.renderCard(cardInfo))}
+				</div>
+			</React.Fragment>
+		);
+	}
 }
 
 export default CardsBoard;
