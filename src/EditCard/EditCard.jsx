@@ -18,20 +18,12 @@ class EditCard extends React.Component {
 
 	changeName(event) {
 		const { value } = event.target;
-		if (value) {
-			this.setState({ name: value });
-		} else {
-			this.setState({ name: this.props.cardToEdit.imageUrl });
-		}
+		this.setState({ name: value });
 	}
 
 	changeUrl(event) {
 		const { value } = event.target;
-		if (value) {
-			this.setState({ imageUrl: value });
-		} else {
-			this.setState({ imageUrl: this.props.cardToEdit.imageUrl });
-		}
+		this.setState({ imageUrl: value });
 	}
 
 	handleSubmit(event) {
@@ -42,9 +34,9 @@ class EditCard extends React.Component {
 	}
 
 	render() {
-		const { cardToEdit } = this.props;
 		let { name, imageUrl } = this.state;
 
+		const isEnabled = name.length > 0 && imageUrl.length > 0;
 		return (
 			<React.Fragment>
 				<form onSubmit={this.handleSubmit}>
@@ -52,19 +44,21 @@ class EditCard extends React.Component {
 						Name:
 						<input
 							type="text"
-							value={this.state.name || cardToEdit.name}
+							value={this.state.name}
 							onChange={this.changeName}
+							required
 						/>
 					</label>
 					<label>
 						image url:
 						<input
 							type="text"
-							value={this.state.imageUrl || cardToEdit.imageUrl}
+							value={this.state.imageUrl}
 							onChange={this.changeUrl}
+							required
 						/>
 					</label>
-					<input type="submit" value="Submit" />
+					<input disabled={!isEnabled} type="submit" value="Submit" />
 				</form>
 				<div className="cardContainer">
 					{name}
